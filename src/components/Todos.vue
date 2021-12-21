@@ -16,7 +16,7 @@
                 </li>
             </ul>
         </div>
-        <footer class="footer">
+        <footer class="footer" v-show="hasTodos">
             <span class="todo-count">
                 <strong>{{ remaining }}</strong> tâches à faire
             </span>
@@ -67,6 +67,9 @@ export default {
                     todo.completed = value
                 })
             }
+        },
+        hasTodos () {
+            return this.todos.length > 0
         },
         remaining () {
             return this.todos.filter(todo => !todo.completed).length

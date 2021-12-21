@@ -5,11 +5,13 @@
             <input type="text" class="new-todo" placeholder="Ajouter une tâche" v-model="newTodo" @keyup.enter="addTodo">
         </header>
         <div class="main">
+            <input type="checkbox" class="toggle-all" v-model="allDone">
             <ul class="todo-list">
                 <li class="todo" v-for="todo in filteredTodos" :key="todo.id" :class="{completed: todo.completed}">
                     <div class="view">
                         <input type="checkbox" v-model="todo.completed" class="toggle">
                         <label>{{ todo.name }}</label>
+                        <button class="destroy" @click.prevent="deleteTodo(todo)"></button>
                     </div>
                 </li>
             </ul>
@@ -50,9 +52,22 @@ export default {
                 completed: false
             })
             this.newTodo = ''
+        },
+        deleteTodo (todo) {
+            this.todos = this.todos.filter(i => i !== todo);
         }
     },
     computed: {
+        allDone: {
+            get () {
+                return this.remaining === 0
+            },
+            set (value) {
+                this.todos.forEach(todo => {
+                    todo.completed = value
+                })
+            }
+        },
         remaining () {
             return this.todos.filter(todo => !todo.completed).length
         },

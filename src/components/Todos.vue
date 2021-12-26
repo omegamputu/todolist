@@ -7,12 +7,13 @@
         <div class="main">
             <input type="checkbox" class="toggle-all" v-model="allDone">
             <ul class="todo-list">
-                <li class="todo" v-for="todo in filteredTodos" :key="todo.id" :class="{completed: todo.completed}">
+                <li class="todo" v-for="todo in filteredTodos" :key="todo.id" :class="{completed: todo.completed, editing: todo === editing}">
                     <div class="view">
                         <input type="checkbox" v-model="todo.completed" class="toggle">
-                        <label>{{ todo.name }}</label>
+                        <label @dblclick="editTodo(todo)">{{ todo.name }}</label>
                         <button class="destroy" @click.prevent="deleteTodo(todo)"></button>
                     </div>
+                    <input type="text" class="edit" v-model="todo.name" v-focus="todo === editing" @keyup.enter="doneEdit" @blur="doneEdit">
                 </li>
             </ul>
         </div>
@@ -32,6 +33,8 @@
 
 <script>
 
+import Vue from 'vue';
+
 export default {
     data () {
         return {
@@ -43,7 +46,8 @@ export default {
                 }
             ],
             newTodo: '',
-            filter: 'all'
+            filter: 'all',
+            editing: null
         }
     },
     methods: {
@@ -53,6 +57,12 @@ export default {
                 completed: false
             })
             this.newTodo = ''
+        },
+        editTodo (todo) {
+            this.editing = todo
+        },
+        doneEdit () {
+            this.editing = null
         },
         deleteTodo (todo) {
             this.todos = this.todos.filter(i => i !== todo);
@@ -88,6 +98,15 @@ export default {
                 return this.todos.filter(todo => todo.completed)
             }
             return this.todos;
+        }
+    },
+    directives: {
+        focus (el, value) {
+            if (value) {
+                Vue.nextTick(_ => {
+                    el.focus()
+                })
+            }
         }
     }
 }
